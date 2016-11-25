@@ -4,10 +4,10 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream._
 import akka.stream.scaladsl.GraphDSL.Implicits._
-import akka.stream.scaladsl.{Balance, Flow, GraphDSL, Merge, Sink, Source}
+import akka.stream.scaladsl.{Balance, Flow, GraphDSL, Merge, Source}
 import com.github.tototoshi.csv.CSVReader
-import com.henry.review.google.{GoogleApiFake, IGoogleApi}
-import com.henry.review.model.{Review, ReviewTranslation, SentenceBatch}
+import com.henry.review.google.IGoogleApi
+import com.henry.review.model.{Review, SentenceBatch}
 import com.henry.review.translator.ReviewTranslator.GoogleApiConcurrencyLimit
 
 import scala.collection.mutable
@@ -36,7 +36,7 @@ class ReviewTranslator(googleApi: IGoogleApi) {
         }
 
         FlowShape(dispatchLine.in, mergeTranslate.out)
-      }).withAttributes(ActorAttributes.dispatcher("akka.stream.google-translate-api-dispatcher"))
+      })
 
     val reviewsReader = CSVReader.open(filename)
     val reviewsIterator = reviewsReader.iterator.drop(1)
