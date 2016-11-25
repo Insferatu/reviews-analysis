@@ -8,8 +8,8 @@ object Runner {
   val ReviewsFilename = "Reviews.csv"
 
   def main(args: Array[String]): Unit = {
-    //val reviewAnalyzer = new ReviewAnalyzer
-    //reviewAnalyzer.analyze(ReviewsFilename)
+    val reviewAnalyzer = new ReviewAnalyzer
+    reviewAnalyzer.analyze(ReviewsFilename)
 
     if (args.contains("translate=true")) {
       val reviewTranslator = new ReviewTranslator(new GoogleApiFake)
