@@ -39,14 +39,20 @@ class ReviewTranslator(googleApi: IGoogleApi) {
       }).withAttributes(ActorAttributes.dispatcher("akka.stream.google-translate-api-dispatcher"))
 
     val reviewsReader = CSVReader.open(filename)
-    val reviewsIterator = reviewsReader.iterator.drop(1).take(1000)
+    val reviewsIterator = reviewsReader.iterator.drop(1)
     Source(reviewsIterator.to[collection.immutable.Iterable])
       .via(translateFlow)
       .via(new ReviewTranslationCreator)
-      .to(Sink.foreach { reviewTranslation =>
-        val ReviewTranslation(reviewId, originalText, translatedText) = reviewTranslation
-        println(s"${checkMap(reviewId) == originalText}", reviewTranslation)
-      }).run()
+      .runForeach { reviewTranslation =>
+        val reviewId = reviewTranslation.reviewId
+        val originalText = reviewTranslation.originalText
+        if (checkMap(reviewId) != originalText)
+          println(
+            s"""There is a difference between original text before passing pipeline and after:
+               |  Before pipeline: ${checkMap(reviewId)}
+               |  After pipeline: $originalText
+             """.stripMargin)
+      }
 
   }
 }

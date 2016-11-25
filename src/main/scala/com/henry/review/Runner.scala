@@ -11,7 +11,9 @@ object Runner {
     val reviewAnalyzer = new ReviewAnalyzer
     reviewAnalyzer.analyze(ReviewsFilename)
 
-    val reviewTranslator = new ReviewTranslator(new GoogleApiFake)
-    reviewTranslator.translate(ReviewsFilename)
+    if (args.contains("translate=true")) {
+      val reviewTranslator = new ReviewTranslator(new GoogleApiFake)
+      reviewTranslator.translate(ReviewsFilename)
+    }
   }
 }
