@@ -2,6 +2,7 @@ package com.henry.review.analyzer
 
 import com.henry.review.iterator.WordIterator
 import com.henry.review.model.Review
+import org.apache.hadoop.conf.Configuration
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
@@ -11,6 +12,10 @@ class ReviewAnalyzer {
     .appName("Reviews analyzing")
     .master("local[4]")
     .getOrCreate()
+  val hadoopConfig: Configuration = spark.sparkContext.hadoopConfiguration
+  //hadoopConfig.set("fs.hdfs.impl", classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getNam‌​e)
+  hadoopConfig.set("fs.file.impl", classOf[org.apache.hadoop.fs.LocalFileSystem].getName)
+
 
   def analyze(filename: String): Unit = {
     val reviewsDataframe = spark.read.format("com.databricks.spark.csv")
