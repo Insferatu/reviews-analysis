@@ -9,11 +9,10 @@ import org.apache.spark.sql.SparkSession
 class ReviewAnalyzer {
   private val spark = SparkSession
     .builder()
-    .appName("Reviews analyzing")
+    .appName("Reviews analysis")
     .master("local[4]")
     .getOrCreate()
   val hadoopConfig: Configuration = spark.sparkContext.hadoopConfiguration
-  //hadoopConfig.set("fs.hdfs.impl", classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getNam‌​e)
   hadoopConfig.set("fs.file.impl", classOf[org.apache.hadoop.fs.LocalFileSystem].getName)
 
 

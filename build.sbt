@@ -20,7 +20,8 @@ libraryDependencies ++= Seq(
   "com.github.tototoshi" %% "scala-csv" % "1.3.4",
   "com.ibm.icu" % "icu4j" % "56.1",
 
-  "org.scalatest" % "scalatest_2.11" % "2.2.6" % Test
+  "org.scalatest" %% "scalatest" % "2.2.6" % Test,
+  "com.typesafe.akka" %% "akka-stream-testkit" % "2.4.14" % Test
 )
 
 assemblyMergeStrategy in assembly := {

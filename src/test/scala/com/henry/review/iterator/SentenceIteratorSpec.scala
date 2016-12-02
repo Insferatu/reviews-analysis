@@ -4,6 +4,8 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class SentenceIteratorSpec extends FlatSpec with Matchers {
 
+  behavior of "SentenceIterator"
+
   it should "find all sentences in the text correctly" in {
     val sampleText =
       "The gods, lying beside their nectar on 'Lympus and peeping over " +
@@ -33,5 +35,4 @@ class SentenceIteratorSpec extends FlatSpec with Matchers {
 
     new SentenceIterator(sampleText).toSeq should be(expectedSentencesInOrder)
   }
-
 }

@@ -37,7 +37,7 @@ class ReviewTranslationCreator extends GraphStage[FlowShape[(SentenceBatch, Stri
             .map { case (_, sentences) => sentences.toString }
 
         val originalBlocks = sentencesToBlocks(text.split("\n").toIterator.flatMap(SentenceIterator.apply).filterNot(_.isEmpty))
-        val translatedBlocks = sentencesToBlocks(SentenceIterator(translation).filterNot(_.isEmpty))
+        val translatedBlocks = sentencesToBlocks(translation.split("\n").toIterator.flatMap(SentenceIterator.apply).filterNot(_.isEmpty))
 
         reviewBlockMarkers.zip(originalBlocks.zip(translatedBlocks)).foreach {
           case (ReviewBlockMarker(reviewId, _, reviewBlockIndex, reviewBlockNumber), (originalBlock, translatedBlock)) =>

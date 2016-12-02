@@ -4,6 +4,8 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class WordIteratorSpec extends FlatSpec with Matchers {
 
+  behavior of "WordIterator"
+
   it should "find all words in the text correctly" in {
     val sampleText =
       "!True; and therefore women, 24 being the weaker vessels, " +
@@ -19,5 +21,4 @@ class WordIteratorSpec extends FlatSpec with Matchers {
 
     WordIterator(sampleText).toSeq should be(expectedWordsInOrder)
   }
-
 }

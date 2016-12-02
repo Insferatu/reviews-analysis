@@ -2,7 +2,7 @@ package com.henry.review.analyzer
 
 import com.henry.review.model.Review
 import org.apache.spark.sql.SparkSession
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FlatSpec, Matchers}
+import org.scalatest.{FlatSpec, Matchers}
 
 class ReviewAnalyzerSpec extends FlatSpec with Matchers {
   val sc = SparkSession
@@ -10,6 +10,8 @@ class ReviewAnalyzerSpec extends FlatSpec with Matchers {
     .appName("Test app")
     .master("local[2]")
     .getOrCreate().sparkContext
+
+  behavior of "ReviewAnalyzer"
 
   it should "find the most active users without dropping unnecessary results" in {
     val testReviews = Seq(
