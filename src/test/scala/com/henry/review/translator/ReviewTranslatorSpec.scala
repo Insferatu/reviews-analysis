@@ -13,6 +13,7 @@ import scala.collection.Iterator.fill
 
 class ReviewTranslatorSpec extends FlatSpec {
   implicit val system = ActorSystem("TestSystem")
+  implicit val dispatcher = system.dispatcher
   implicit val materializer = ActorMaterializer()
 
   behavior of "ReviewTranslator"
@@ -203,6 +204,5 @@ class ReviewTranslatorSpec extends FlatSpec {
       .runWith(TestSink.probe[ReviewTranslation])
       .request(expectedReviewTranslations.size)
       .expectNextUnorderedN(expectedReviewTranslations)
-      .expectComplete()
   }
 }

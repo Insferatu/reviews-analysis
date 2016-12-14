@@ -3,20 +3,19 @@ package com.henry.review.translator
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream._
-import akka.stream.scaladsl.GraphDSL.Implicits._
-import akka.stream.scaladsl.{Balance, Flow, GraphDSL, Merge, Source}
+import akka.stream.scaladsl.{Flow, Source}
 import com.github.tototoshi.csv.CSVReader
 import com.henry.review.google.IGoogleApi
-import com.henry.review.model.{Review, ReviewTranslation, SentenceBatch}
-import com.henry.review.translator.ReviewTranslator.GoogleApiConcurrencyLimit
+import com.henry.review.model.{Review, ReviewTranslation}
 
 import scala.collection.mutable
-import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class ReviewTranslator(googleApi: IGoogleApi) {
   def translate(filename: String): Unit = {
     implicit val system = ActorSystem("TranslationSystem")
+    implicit val dispatcher = system.dispatcher
     implicit val materializer = ActorMaterializer()
 
     val reviewVerificationMap = mutable.Map[String, String]()
@@ -46,21 +45,13 @@ class ReviewTranslator(googleApi: IGoogleApi) {
     system.terminate()
   }
 
-  private[translator] val translateReviewFlow: Flow[Review, ReviewTranslation, NotUsed] =
-    Flow.fromGraph(GraphDSL.create() { implicit builder =>
-      val dispatchLine = builder.add(Balance[Review](GoogleApiConcurrencyLimit))
-      val mergeTranslate = builder.add(Merge[(SentenceBatch, String)](GoogleApiConcurrencyLimit))
-      val batchCreatorFlow = Flow[Review].via(new SentenceBatchCreator)
-      val translateThroughGoogleApiFlow = Flow[SentenceBatch].map { batch =>
-        (batch, googleApi.translate("us", "fr", batch.text))
-      }.async
-
-      (0 until GoogleApiConcurrencyLimit).foreach { index =>
-        dispatchLine.out(index) ~> batchCreatorFlow ~> translateThroughGoogleApiFlow ~> mergeTranslate.in(index)
+  private[translator] def translateReviewFlow(implicit dispatcher: ExecutionContext): Flow[Review, ReviewTranslation, NotUsed] =
+    Flow[Review]
+      .via(new SentenceBatchCreator)
+      .mapAsync(100) { batch =>
+        Future(batch -> googleApi.translate("us", "fr", batch.text))
       }
-
-      FlowShape(dispatchLine.in, mergeTranslate.out)
-    }).via(new ReviewTranslationCreator)
+      .via(new ReviewTranslationCreator)
 }
 
 object ReviewTranslator {
