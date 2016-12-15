@@ -1,7 +1,7 @@
 Reviews analysis
 ====
 
-Dataset for analysis is taken from [Kaggle](https://www.kaggle.com/snap/amazon-fine-food-reviews) (Amazon Fine Food Reviews).
+Dataset for analysis was taken from [Kaggle](https://www.kaggle.com/snap/amazon-fine-food-reviews) (Amazon Fine Food Reviews).
 The following information was extracted from the dataset:
 - 1000 most active users (profile names)
 - 1000 most commented food items (item ids)
